@@ -24,7 +24,7 @@ import { randomUUID } from 'node:crypto';
 import { ConnectionError, errorFromResponse } from './errors.js';
 import { API_VERSION } from './generated/meta.js';
 
-export const VERSION = '0.1.0';
+export const VERSION = '0.2.0';
 export const DEFAULT_BASE_URL = 'https://api.compliwa.com';
 const RETRY_STATUSES = new Set([429, 500, 502, 503, 504]);
 const MAX_RETRY_AFTER_MS = 60_000;

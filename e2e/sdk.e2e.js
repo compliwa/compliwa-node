@@ -10,7 +10,12 @@
 import { test, before } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import Compliwa, { InvalidRequestError, NotFoundError, AuthenticationError } from '../src/index.js';
+import Compliwa, {
+  InvalidRequestError,
+  NotFoundError,
+  AuthenticationError,
+  PermissionError,
+} from '../src/index.js';
 
 const KEY = process.env.COMPLIWA_API_KEY;
 const BASE_URL = process.env.COMPLIWA_BASE_URL ?? 'http://localhost:5010';
@@ -115,4 +120,28 @@ test('errors in your language', async () => {
   const invalid = await french.verifications.create({}).catch((e) => e);
   assert.ok(invalid instanceof InvalidRequestError);
   assert.notEqual(invalid.title, null);
+});
+
+test('webhook endpoints: subscribe, change, unsubscribe (needs the webhooks.manage scope)', async (t) => {
+  const url = process.env.COMPLIWA_E2E_HOOK_URL ?? 'https://example.com/compliwa-sdk-e2e';
+  const created = await compliwa.webhookEndpoints
+    .create({ url, description: 'SDK e2e', events: ['verification.completed'] })
+    .catch((e) => e);
+  if (created instanceof PermissionError) {
+    t.skip('this key lacks webhooks.manage — tick "Manage webhook endpoints" to run it');
+    return;
+  }
+  assert.match(created.id, /^wep_/);
+  assert.match(created.secret, /^whsec_/);
+  assert.equal(created.environment, 'test');
+  try {
+    const listed = await compliwa.webhookEndpoints.list();
+    assert.ok(listed.data.some((e) => e.id === created.id));
+    const changed = await compliwa.webhookEndpoints.update(created.id, { events: ['screening.completed'] });
+    assert.deepEqual(changed.events, ['screening.completed']);
+    assert.ok(changed.added_by_api_key?.id);
+  } finally {
+    const removed = await compliwa.webhookEndpoints.del(created.id);
+    assert.equal(removed.deleted, true);
+  }
 });
