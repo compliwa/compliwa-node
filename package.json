@@ -1,0 +1,54 @@
+{
+  "name": "@compliwa/node",
+  "version": "0.1.0",
+  "description": "The official Node.js library for the Compliwa API: identity checks, screening, monitoring, cases, Travel Rule and signed webhooks.",
+  "type": "module",
+  "main": "./src/index.js",
+  "types": "./types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./types/index.d.ts",
+      "default": "./src/index.js"
+    }
+  },
+  "files": [
+    "src",
+    "types",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "generate": "node scripts/generate.js",
+    "generate:check": "node scripts/generate.js --check",
+    "test": "node --test test/*.test.js",
+    "test:e2e": "node --test e2e/sdk.e2e.js",
+    "typecheck": "tsc -p tsconfig.json",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "keywords": [
+    "compliwa",
+    "kyc",
+    "aml",
+    "compliance",
+    "sanctions",
+    "screening",
+    "travel-rule",
+    "webhooks"
+  ],
+  "license": "MIT",
+  "sideEffects": false,
+  "homepage": "https://compliwa.com/developers",
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@types/node": "^24.19.2",
+    "eslint": "^9.39.5",
+    "globals": "^17.14.0",
+    "prettier": "^3.9.10",
+    "typescript": "5.9"
+  }
+}
