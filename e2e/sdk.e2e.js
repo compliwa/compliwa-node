@@ -40,10 +40,12 @@ test('the key: test environment, its scopes', async () => {
   assert.equal(key.lastResponse.status, 200);
   assert.equal(key.lastResponse.environment, 'test');
   assert.match(key.lastResponse.requestId ?? '', /\S/);
-  assert.equal(
-    key.lastResponse.apiVersion,
-    Compliwa.API_VERSION,
-    'the SDK was generated from this API version',
+  // The API only adds within v1: an SDK generated from an earlier contract keeps working.
+  const served = key.lastResponse.apiVersion.split('.').map(Number);
+  const built = Compliwa.API_VERSION.split('.').map(Number);
+  assert.ok(
+    served[0] === built[0] && (served[1] > built[1] || (served[1] === built[1] && served[2] >= built[2])),
+    `the API (${key.lastResponse.apiVersion}) is the version this SDK was generated from (${Compliwa.API_VERSION}) or newer`,
   );
 });
 
