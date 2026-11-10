@@ -202,8 +202,8 @@ npm run test:e2e     # against a running API, with COMPLIWA_API_KEY=cw_test_…
 ```
 
 `src/generated/` and `types/generated.d.ts` come from the contract and are never edited by hand.
-The method names come from the contract too (`x-sdk`), so this library, the Python library and the
-API reference always agree.
+The method names come from the contract too (`x-sdk`), so this library, the
+[Python library](https://github.com/compliwa/compliwa-python) and the API reference always agree.
 
 ## License
 

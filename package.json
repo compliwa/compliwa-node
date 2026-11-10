@@ -40,6 +40,13 @@
     "travel-rule",
     "webhooks"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/compliwa/compliwa-node.git"
+  },
+  "bugs": {
+    "url": "https://github.com/compliwa/compliwa-node/issues"
+  },
   "license": "MIT",
   "sideEffects": false,
   "homepage": "https://compliwa.com/developers",
