@@ -34,6 +34,25 @@ test('the key: required, shaped, never printed', () => {
   assert.ok(!JSON.stringify(live).includes('bbbb'), 'JSON never shows the key');
 });
 
+test('an OAuth access token works like a key (step 12.7 of the API)', async () => {
+  const token = `cwat_live_${'c'.repeat(40)}`;
+  let sent;
+  const app = new Compliwa(token, {
+    fetch: async (_url, init) => {
+      sent = new Headers(init.headers).get('authorization');
+      return new Response('{}', { headers: { 'Content-Type': 'application/json' } });
+    },
+  });
+  assert.equal(app.environment, 'live');
+  await app.request('GET', '/v1/api-key');
+  assert.equal(sent, `Bearer ${token}`);
+  assert.equal(
+    new Compliwa(`cwat_test_${'c'.repeat(40)}`, { fetch: async () => new Response('{}') }).environment,
+    'test',
+  );
+  assert.throws(() => new Compliwa(`cwrt_test_${'c'.repeat(40)}`), /starts with cw_test_ or cw_live_/);
+});
+
 test('every operation in the contract is a method', () => {
   const compliwa = client(mockFetch([]));
   assert.ok(OPERATIONS.length >= 60);

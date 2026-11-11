@@ -17,7 +17,8 @@ import { OPERATIONS } from './generated/operations.js';
 import { API_VERSION } from './generated/meta.js';
 import { PagePromise } from './pagination.js';
 
-const KEY_SHAPE = /^cw_(test|live)_[A-Za-z0-9_-]{8,}$/;
+// An API key (cw_test_… / cw_live_…) or an OAuth access token (cwat_test_… / cwat_live_…).
+const KEY_SHAPE = /^cw(?:at)?_(test|live)_[A-Za-z0-9_-]{8,}$/;
 const camel = (text) => text.replace(/_([a-z0-9])/g, (_, c) => c.toUpperCase());
 
 function isPlainObject(value) {
@@ -82,7 +83,8 @@ export class Compliwa {
   static API_VERSION = API_VERSION;
 
   /**
-   * @param {string} [apiKey]  cw_test_… or cw_live_… — defaults to process.env.COMPLIWA_API_KEY
+   * @param {string} [apiKey]  cw_test_… or cw_live_… — or an OAuth access token (cwat_test_…, cwat_live_…)
+   *                           for an app customers connected; defaults to process.env.COMPLIWA_API_KEY
    * @param {object} [options]  { baseUrl, timeoutMs, maxRetries, fetch, appInfo, language }
    */
   constructor(apiKey, options = {}) {
@@ -105,12 +107,14 @@ export class Compliwa {
       const hint = key.startsWith('whsec_')
         ? ' That is a webhook signing secret — it goes to verifyWebhook(), not here.'
         : '';
-      throw new Error(`compliwa: an API key starts with cw_test_ or cw_live_.${hint}`);
+      throw new Error(
+        `compliwa: an API key starts with cw_test_ or cw_live_ (an OAuth access token with cwat_test_ or cwat_live_).${hint}`,
+      );
     }
     const http = new HttpClient(key, options);
     Object.defineProperty(this, 'http', { value: http, enumerable: false });
-    /** 'test' (sandbox data, never charged) or 'live' — decided by the key. */
-    this.environment = key.startsWith('cw_live_') ? 'live' : 'test';
+    /** 'test' (sandbox data, never charged) or 'live' — decided by the key or token. */
+    this.environment = KEY_SHAPE.exec(key)[1];
     this.baseUrl = http.baseUrl;
     buildResources(this, http);
   }

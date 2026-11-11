@@ -47,6 +47,22 @@ Keep it in an environment variable or your secret manager — never in code, nev
 The sandbox's test numbers (an ID that is found, one that is not, a provider that times out …) are
 listed at `GET /v1/sandbox` and on the [Sandbox page](https://compliwa.com/developers/api/sandbox).
 
+## An app your customers connect (OAuth)
+
+If you build a product that other companies connect to their Compliwa workspace, they click
+"Allow" on Compliwa's consent screen instead of pasting a key into your product. Your server then
+holds an OAuth access token (`cwat_test_…` or `cwat_live_…`, one hour) for each customer. It works
+everywhere a key does:
+
+```js
+const customer = new Compliwa(accessTokenFromYourDatabase);
+const verifications = await customer.verifications.list({ limit: 10 });
+```
+
+When it expires the API answers `401 access_token_expired`: exchange your refresh token at
+`POST /v1/oauth/token` (any OAuth library does this) and use the new access token. The flow, the
+scopes and the token endpoint are in the API reference, under OAuth.
+
 ## How methods read
 
 `compliwa.<resource>.<method>(...ids, params?, options?)`

@@ -1,6 +1,6 @@
 {
   "name": "@compliwa/node",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "The official Node.js library for the Compliwa API: identity checks, screening, monitoring, cases, Travel Rule and signed webhooks.",
   "type": "module",
   "main": "./src/index.js",
